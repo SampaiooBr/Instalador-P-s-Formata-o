@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMPAIOOBR - Central Pós-Formatador v3.5</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #0b0f17;
+            --bg-card: #151c28;
+            --bg-card-hover: #1e293b;
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.25);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: #26334d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 120px;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #131c2e 0%, var(--bg-body) 100%);
+            padding: 40px 20px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header .badge {
+            background: var(--accent-green-glow);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-sub);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 30px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-main);
+        }
+
+        .category-title i {
+            color: var(--accent-green);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .card:hover {
+            background-color: var(--bg-card-hover);
+            border-color: #3b4f74;
+            transform: translateY(-2px);
+        }
+
+        .card.selected {
+            border-color: var(--accent-green);
+            background-color: #112229;
+            box-shadow: 0 4px 20px var(--accent-green-glow);
+        }
+
+        .btn-edit-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .card:hover .btn-edit-icon {
+            opacity: 1;
+        }
+
+        .btn-edit-icon:hover {
+            background: var(--accent-green);
+            color: #000;
+            border-color: var(--accent-green);
+        }
+
+        .app-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .app-icon i.fallback-icon {
+            font-size: 1.5rem;
+            color: var(--text-sub);
+        }
+
+        .app-info {
+            flex-grow: 1;
+        }
+
+        .app-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .app-desc {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        .checkbox-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .card.selected .checkbox-box {
+            background-color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .checkbox-box i {
+            color: #000;
+            font-size: 0.75rem;
+            display: none;
+        }
+
+        .card.selected .checkbox-box i {
+            display: block;
+        }
+
+        .floating-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(15, 22, 35, 0.92);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            padding: 16px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .bar-info {
+            font-size: 1rem;
+            color: var(--text-sub);
+        }
+
+        .bar-info strong {
+            color: var(--accent-green);
+            font-size: 1.2rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-install {
+            background-color: var(--accent-green);
+            color: #0b0f17;
+        }
+
+        .btn-install:hover {
+            background-color: #0ea5e9;
+            color: #fff;
+        }
+
+        .btn-all {
+            background-color: #3b82f6;
+            color: #fff;
+        }
+
+        .btn-copy {
+            background-color: #8b5cf6;
+            color: #fff;
+        }
+
+        .btn-clear {
+            background-color: transparent;
+            color: var(--text-sub);
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span class="badge">SAMPAIOOBR v3.5</span>
+        <h1>Instalador Pós-Formatação</h1>
+        <p>Passe o mouse sobre qualquer card e clique no ícone de <strong>lápis</strong> para alterar o ícone.</p>
+    </div>
+
+    <div class="container">
+        <!-- ESSENCIAIS -->
+        <div class="category-title"><i class="fa-solid fa-star"></i> Programas Essenciais</div>
+        <div class="grid">
+            <div class="card selected" onclick="toggleCard(this)" data-id="Google.Chrome" data-type="winget" data-name="Google Chrome">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-brands fa-chrome fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Google Chrome</div><div class="app-desc">Navegador Web</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-id="RARLab.WinRAR" data-type="winget" data-name="WinRAR">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-file-zipper fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">WinRAR</div><div class="app-desc">Compactador ZIP/RAR</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-id="Adobe.Acrobat.Reader.64-bit" data-type="winget" data-name="Adobe Reader">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-file-pdf fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Adobe Reader</div><div class="app-desc">Leitor de PDF</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-type="office" data-name="Microsoft 365">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-file-word fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Microsoft 365</div><div class="app-desc">Word, Excel, PPT (ODT)</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+        </div>
+
+        <!-- RUNTIMES -->
+        <div class="category-title"><i class="fa-solid fa-microchip"></i> Runtimes Essenciais</div>
+        <div class="grid">
+            <div class="card selected" onclick="toggleCard(this)" data-id="Microsoft.VCRedist.2015+.x64" data-type="winget" data-name="Visual C++ (x64)">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-code fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Visual C++ (x64)</div><div class="app-desc">Pacote VCRedist 2015-2022</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-id="Microsoft.VCRedist.2015+.x86" data-type="winget" data-name="Visual C++ (x86)">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-code fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Visual C++ (x86)</div><div class="app-desc">Pacote VCRedist 2015-2022</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-id="Microsoft.DirectX" data-type="winget" data-name="DirectX Runtime">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-layer-group fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">DirectX Runtime</div><div class="app-desc">Bibliotecas para Jogos</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+        </div>
+
+        <!-- GAMING -->
+        <div class="category-title"><i class="fa-solid fa-gamepad"></i> Gaming & Launchers</div>
+        <div class="grid">
+            <div class="card selected" onclick="toggleCard(this)" data-id="Discord.Discord" data-type="winget" data-name="Discord">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-brands fa-discord fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Discord</div><div class="app-desc">Comunicação e Voz</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-id="Valve.Steam" data-type="winget" data-name="Steam">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-brands fa-steam fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Steam</div><div class="app-desc">Plataforma de Jogos</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)" data-id="ElectronicArts.EADesktop" data-type="winget" data-name="EA App">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-gamepad fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">EA App</div><div class="app-desc">Launcher Electronic Arts</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)" data-id="EpicGames.EpicGamesLauncher" data-type="winget" data-name="Epic Games">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-ghost fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Epic Games</div><div class="app-desc">Launcher de Jogos</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)" data-id="Ubisoft.Connect" data-type="winget" data-name="Ubisoft Connect">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-circle-nodes fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Ubisoft Connect</div><div class="app-desc">Launcher Ubisoft</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+        </div>
+
+        <!-- SUPORTE -->
+        <div class="category-title"><i class="fa-solid fa-wrench"></i> Suporte & Ferramentas</div>
+        <div class="grid">
+            <div class="card" onclick="toggleCard(this)" data-id="Piriform.Speccy" data-type="winget" data-name="Speccy">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-microchip fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">Speccy</div><div class="app-desc">Informações do Hardware</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)" data-id="Nvidia.NvidiaApp" data-type="winget" data-name="NVIDIA App">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-desktop fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">NVIDIA App</div><div class="app-desc">Painel e Drivers NVIDIA</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)" data-id="BitTorrent.uTorrent" data-type="winget" data-name="uTorrent Classic">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-download fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">uTorrent Classic</div><div class="app-desc">Cliente Torrent</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+
+            <div class="card selected" onclick="toggleCard(this)" data-id="AnyDeskSoftwareGmbH.AnyDesk" data-type="winget" data-name="AnyDesk">
+                <button class="btn-edit-icon" title="Mudar Ícone" onclick="changeIcon(event, this)"><i class="fa-solid fa-pen"></i></button>
+                <div class="app-icon"><i class="fa-solid fa-headset fallback-icon"></i></div>
+                <div class="app-info"><div class="app-name">AnyDesk</div><div class="app-desc">Acesso Remoto</div></div>
+                <div class="checkbox-box"><i class="fa-solid fa-check"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRA FLUTUANTE DE AÇÕES -->
+    <div class="floating-bar">
+        <div class="bar-info">
+            Selecionados: <strong id="selected-count">0</strong>
+        </div>
+        <div class="actions">
+            <button class="btn btn-clear" onclick="selectAll(false)">Desmarcar Tudo</button>
+            <button class="btn btn-all" onclick="selectAll(true)"><i class="fa-solid fa-check-double"></i> Selecionar Tudo</button>
+            <button class="btn btn-copy" onclick="copyPowerShellCommand()"><i class="fa-solid fa-terminal"></i> COPIAR COMANDO (PowerShell)</button>
+            <button class="btn btn-install" onclick="executeInstallation()"><i class="fa-solid fa-download"></i> BAIXAR BAT</button>
+            <button class="btn" onclick="openApoioModal()" style="background-color: #db2777; color: white;"><i class="fa-solid fa-heart"></i> APOIO / PIX</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadSavedIcons);
+
+        function toggleCard(card) {
+            card.classList.toggle('selected');
+            updateCount();
+        }
+
+        function updateCount() {
+            const count = document.querySelectorAll('.card.selected').length;
+            document.getElementById('selected-count').innerText = count;
+        }
+
+        function selectAll(status) {
+            document.querySelectorAll('.card').forEach(card => {
+                if (status) card.classList.add('selected');
+                else card.classList.remove('selected');
+            });
+            updateCount();
+        }
+
+        function changeIcon(event, button) {
+            event.stopPropagation();
+            const card = button.closest('.card');
+            const appName = card.getAttribute('data-name');
+            const iconContainer = card.querySelector('.app-icon');
+
+            const currentImg = iconContainer.querySelector('img');
+            const currentUrl = currentImg ? currentImg.src : '';
+
+            const newUrl = prompt(`Cole a URL/Link da imagem PNG para o [${appName}]:`, currentUrl);
+
+            if (newUrl !== null && newUrl.trim() !== "") {
+                setIconImage(iconContainer, newUrl.trim());
+                saveIconToStorage(appName, newUrl.trim());
+            }
+        }
+
+        function setIconImage(container, url) {
+            container.innerHTML = `<img src="${url}" alt="Icon" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-image fallback-icon\\'></i>';">`;
+        }
+
+        function saveIconToStorage(appName, url) {
+            const saved = JSON.parse(localStorage.getItem('custom_app_icons') || '{}');
+            saved[appName] = url;
+            localStorage.setItem('custom_app_icons', JSON.stringify(saved));
+        }
+
+        function loadSavedIcons() {
+            const saved = JSON.parse(localStorage.getItem('custom_app_icons') || '{}');
+            document.querySelectorAll('.card').forEach(card => {
+                const appName = card.getAttribute('data-name');
+                if (saved[appName]) {
+                    setIconImage(card.querySelector('.app-icon'), saved[appName]);
+                }
+            });
+            updateCount();
+        }
+
+        function copyPowerShellCommand() {
+            const selectedCards = document.querySelectorAll('.card.selected');
+            if (selectedCards.length === 0) {
+                alert('Selecione pelo menos um programa!');
+                return;
+            }
+
+            let cmds = [];
+            selectedCards.forEach(card => {
+                const id = card.getAttribute('data-id');
+                const type = card.getAttribute('data-type');
+                if (type === 'winget') {
+                    cmds.push(`winget install --id "${id}" --silent --accept-source-agreements --accept-package-agreements`);
+                }
+            });
+
+            const fullCommand = cmds.join('; ');
+            navigator.clipboard.writeText(fullCommand).then(() => {
+                alert('✅ COMANDO COPIADO!\n\nAbra o PowerShell como Administrador e cole (Ctrl+V).');
+            });
+        }
+
+        function executeInstallation() {
+            const selectedCards = document.querySelectorAll('.card.selected');
+            if (selectedCards.length === 0) {
+                alert('Por favor, selecione ao menos um programa!');
+                return;
+            }
+
+            let batchScript = `@echo off\nnet session >nul 2>&1\nif not %errorlevel%==0 (\n    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"\n    exit /b\n)\n\ntitle SAMPAIOOBR - INSTALADOR AUTOMATICO\ncolor 0A\ncls\necho ============================================================\necho         SAMPAIOOBR - INSTALADOR AUTOMATICO\necho ============================================================\necho.\n\n`;
+
+            selectedCards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const id = card.getAttribute('data-id');
+                const type = card.getAttribute('data-type');
+
+                if (type === 'winget') {
+                    batchScript += `echo [*] Instalando ${name}...\nwinget install --id "${id}" --source winget --exact --silent --accept-source-agreements --accept-package-agreements\necho.\n`;
+                }
+            });
+
+            batchScript += `echo Instalação concluída!\npause\nexit /b 0`;
+
+            const blob = new Blob([batchScript], { type: 'application/x-bat' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Instalar_Programas.bat';
+            link.click();
+        }
+    </script>
+
+<!-- MODAL DE APOIO / PIX -->
+<div id="apoioModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px;" onclick="closeApoioModal(event)">
+    <div style="background:#151c28; border:2px solid #db2777; border-radius:16px; max-width:480px; width:100%; padding:30px; position:relative; box-shadow:0 15px 40px rgba(0,0,0,0.8); text-align:center; color:#f8fafc;" onclick="event.stopPropagation()">
+        <button onclick="closeApoioModalDirect()" style="position:absolute; top:15px; right:20px; background:none; border:none; color:#94a3b8; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <h2 style="color:#f472b6; margin-top:0; font-size:1.5rem; margin-bottom:10px;"><i class="fa-solid fa-heart"></i> Apoie o Projeto</h2>
+        <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5; margin-bottom:20px;">
+            Gostou do utilitário? Contribua com qualquer valor para apoiar novas atualizações e melhorias!
+        </p>
+        
+        <div style="background:#0b0f17; border:1px solid #26334d; border-radius:10px; padding:15px; margin-bottom:15px; text-align:left;">
+            <label style="display:block; font-size:0.75rem; color:#10b981; font-weight:bold; margin-bottom:6px; text-transform:uppercase;">Chave Pix (Copia e Cola / Link):</label>
+            <input type="text" id="pixInputKey" readonly value="https://nubank.com.br/cobrar/6okw4/6aeea0d4-62e0-478e-bd92-76875b573bd6" style="width:100%; background:#151c28; color:#f8fafc; border:1px solid #26334d; border-radius:8px; padding:10px; font-family:monospace; font-size:0.8rem;" onclick="this.select()">
+        </div>
+
+        <div style="background:#0b0f17; border:1px solid #26334d; border-radius:10px; padding:15px; margin-bottom:20px; text-align:left;">
+            <label style="display:block; font-size:0.75rem; color:#10b981; font-weight:bold; margin-bottom:6px; text-transform:uppercase;">ID PIX / Copia e Cola:</label>
+            <input type="text" id="pixIdKey" readonly value="abd297fe-7c1a-42a0-9352-64d75a540910" style="width:100%; background:#151c28; color:#f8fafc; border:1px solid #26334d; border-radius:8px; padding:10px; font-family:monospace; font-size:0.8rem;" onclick="this.select()">
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn" onclick="copyPixKey()" style="background-color:#db2777; color:white; flex:1; justify-content:center;"><i class="fa-solid fa-copy"></i> Copiar Link / ID</button>
+            <button class="btn" onclick="closeApoioModalDirect()" style="background-color:#26334d; color:white; flex:1; justify-content:center;">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openApoioModal() {
+        document.getElementById('apoioModal').style.display = 'flex';
+        document.getElementById('pixInputKey').select();
+    }
+    function closeApoioModal(e) {
+        if (e.target.id === 'apoioModal') document.getElementById('apoioModal').style.display = 'none';
+    }
+    function closeApoioModalDirect() {
+        document.getElementById('apoioModal').style.display = 'none';
+    }
+    function copyPixKey() {
+        const input = document.getElementById('pixInputKey');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                alert("✅ Link Pix copiado com sucesso! Muito obrigado pelo apoio! 🚀");
+                closeApoioModalDirect();
+            } else {
+                navigator.clipboard.writeText(input.value).then(() => {
+                    alert("✅ Link Pix copiado com sucesso!");
+                    closeApoioModalDirect();
+                }).catch(() => {
+                    alert("Por favor, copie manualmente a chave exibida no campo.");
+                });
+            }
+        } catch (err) {
+            alert("Por favor, copie manualmente a chave exibida no campo.");
+        }
+    }
+</script>
+</body>
+
+</html>
